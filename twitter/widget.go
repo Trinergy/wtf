@@ -2,7 +2,12 @@ package twitter
 
 import (
 	"fmt"
+	"os"
 
+	"github.com/senorprogrammer/wtf/cfg"
+
+	"github.com/senorprogrammer/cfg"
+	"github.com/senorprogrammer/wtf/twitter/bearertoken"
 	"github.com/senorprogrammer/wtf/wtf"
 )
 
@@ -17,6 +22,8 @@ func NewWidget() *Widget {
 
 	widget.View.SetWrap(true)
 	widget.View.SetWordWrap(true)
+
+	setAPICredentials()
 
 	return &widget
 }
@@ -34,6 +41,20 @@ func (widget *Widget) Refresh() {
 }
 
 /* -------------------- Unexported Functions -------------------- */
+
+func setAPICredentials() {
+	token := wtf.Config.UString(
+		"wtf.mods.twitter.bearerToken",
+		os.Getenv("WTF_TWITTER_BEARER_TOKEN"),
+	)
+	if len(token) > 0 {
+		return
+	} else {
+		token := bearertoken.NewClient().BearerToken()
+		filePath := cfg.ConfigDir()
+		config := cfg.LoadConfigFile(filePath)
+	}
+}
 
 func (widget *Widget) contentFrom(tweets []Tweet) string {
 	if len(tweets) == 0 {
